@@ -1,13 +1,18 @@
 import Card from './components/card/Card';
 import Navbar from './components/navbar/Navbar';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {posts} from './data';
+import { io } from 'socket.io-client';
 
 const App = () => {
     const [username, setUserName] = useState("");
     const [user, setUser] = useState("");
 
+    useEffect(() => {
+      const socket = io("http://localhost:8001");
+      console.log("Socket connected", socket);
+    },[]);
     return (
         <div className="container">
           { user ? (
