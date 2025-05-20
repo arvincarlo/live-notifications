@@ -1,5 +1,7 @@
 .card {
-    height: 280px;
+    margin: 5px;
+    border: 3px solid #f0f0f0;
+    border-radius: 8px;
 }
 
 .info {
@@ -29,6 +31,7 @@
     align-items: center;
     padding: 5px 10px;
     position: relative;
+    gap: 12px;
 }
 
 .cardIcon {
@@ -43,4 +46,11 @@
     right: 0;
     width: 12px;
     height: 12px;
+}
+
+.postContent {
+    font-size: 15px;
+    margin: 6px;
+
+    line-height: 1.5;
 }

@@ -21,10 +21,12 @@ const Card = ({socket, user, post}) => {
                 <img src={post.userImg} alt="" className="userImg" />
                 <span>{post.fullname}</span>
             </div>
-            <img src={post.postImg} alt="" className="postImg" />
+            <div className="postContent">
+                <span>{post.content}</span>
+            </div>
             <div className="interaction">
                 { liked ? (
-                    <HeartHandshake onClick={() => handleNotification("1")}/>
+                    <Heart style={{ color: 'red' }} onClick={() => handleNotification("1")}/>
                 ) : (
                     <Heart onClick={() => handleNotification("1")}/>
                 ) }
