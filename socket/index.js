@@ -60,8 +60,6 @@ io.on('connection', (socket) => {
 
     console.log("Socket ID: ", socket.id);
 
-    io.emit("firstEvent", "Hello this is test message from me!")
-    
     socket.on('newUser', (username) => {
         addNewUser(username, socket.id)
         console.log(onlineUsers)

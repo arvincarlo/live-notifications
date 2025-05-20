@@ -23,9 +23,6 @@ const App = () => {
     // Send the user to the server
     useEffect(() => {
       socket?.emit("newUser", user)
-      socket?.on("firstEvent", (message) => {
-        console.log("Message from server:", message);
-      })
     }, [socket, user]);
 
     return (
@@ -40,6 +37,7 @@ const App = () => {
             </>
           ) : (
             <div className="login">
+              <h1>Login</h1>
               <input type="text" placeholder="Username" onChange={(e) => setUserName(e.target.value)}/>
               <button onClick={() => setUser(username)}>Login</button>
             </div>

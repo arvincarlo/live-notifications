@@ -5,8 +5,7 @@ import { useEffect, useState } from 'react';
 const Navbar = ({socket}) => {
 
     const [notifications, setNotifications] = useState([]);
-
-
+    const [open, setOpen] = useState(false);
 
     // Getting the notifications 
     useEffect(() => {
@@ -15,18 +14,34 @@ const Navbar = ({socket}) => {
         });
     }, [socket]);
 
-    console.log(notifications)
+    console.log(notifications);
+
+    const displayNotification = ({senderName, type}, index) => {
+        let action;
+
+        if (type === "1") {
+            action = "liked";
+        } else if (type === "2") {
+            action = "commented on";
+        } else {
+            action = "shared";
+        }
+
+        return (
+            <span key={index} className="notification">{`${senderName} ${action} your request.`}</span>
+        )
+    }
 
     return (
         <div className="navbar">
-            <span className="logo">Request Portal</span>
+            <span className="logo">Requests Portal</span>
             <div className="icons">
-                <div className="icon">
+                <div className="icon" onClick={() => setOpen(!open)}>
                     <span className="iconImg">
                         <Bell/>
                     </span>
                     {/* <img src={Notification} alt="" className="iconImg" /> */}
-                    <div className="counter">10</div>
+                    {notifications.length > 0 && <div className="counter">{notifications.length}</div>}
                 </div>
                 <div className="icon">
                     <span className="iconImg">
@@ -42,6 +57,11 @@ const Navbar = ({socket}) => {
                     {/* <img src={Notification} alt="" className="iconImg" /> */}
                     <div className="counter">2</div>
                 </div>
+                { open && (
+                    <div className="notifications">
+                        {notifications.map((notification, index) => displayNotification(notification, index))}
+                    </div>
+                )}
             </div>
         </div>
     )
