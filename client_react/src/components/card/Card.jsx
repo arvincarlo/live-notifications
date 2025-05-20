@@ -2,11 +2,16 @@ import './card.css'
 import { Heart, MessageCircle, Send, HeartHandshake  } from 'lucide-react';
 import { useState } from 'react';
 
-const Card = ({post}) => {
+const Card = ({socket, user, post}) => {
     const [liked, setLiked] = useState(false);
 
-    const handleNotification = () => {
+    const handleNotification = (type) => {
         setLiked(!liked);
+        socket.emit("sendNotification", {
+            senderName: user,
+            receiverName: post.username,
+            type: type.toString()
+        })
     }
 
     return (
@@ -18,12 +23,12 @@ const Card = ({post}) => {
             <img src={post.postImg} alt="" className="postImg" />
             <div className="interaction">
                 { liked ? (
-                    <HeartHandshake onClick={handleNotification}/>
+                    <HeartHandshake onClick={() => handleNotification(1)}/>
                 ) : (
-                    <Heart onClick={handleNotification}/>
+                    <Heart onClick={() => handleNotification(1)}/>
                 ) }
-                <MessageCircle/>
-                <Send/>
+                <MessageCircle onClick={() => handleNotification(2)}/>
+                <Send onClick={() => handleNotification(3)}/>
                 {/* <Info className='infoIcon'/> */}
             </div>
         </div>

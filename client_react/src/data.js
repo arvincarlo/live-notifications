@@ -1,16 +1,16 @@
 export const posts = [
     {
         id: 1,
-        username: "john",
-        fullname: "John Keller",
-        userImg: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
+        username: "arvin",
+        fullname: "Arvin Carlo Cris",
+        userImg: "https://png.pngtree.com/png-vector/20190702/ourlarge/pngtree-businessman-free-vector-icon-png-image_1529542.jpg",
         postImg: "https://images.pexels.com/photos/9730025/pexels-photo-9730025.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
     {
         id: 2,
-        username: "monica",
-        fullname: "Monica Stan",
-        userImg: "https://images.pexels.com/photos/762020/pexels-photo-762020.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
+        username: "kingpaul",
+        fullname: "King Paul Pulgares",
+        userImg: "https://th.bing.com/th/id/OIP.zc3XRPZxUt4Xt7zDZYLa_wHaHa?w=640&h=640&rs=1&pid=ImgDetMain",
         postImg: "https://images.pexels.com/photos/3497624/pexels-photo-3497624.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
 ];

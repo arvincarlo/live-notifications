@@ -1,7 +1,22 @@
 import './navbar.css'
 import { Bell, Mail, Settings } from "lucide-react";
+import { useEffect, useState } from 'react';
 
-const Navbar = () => {
+const Navbar = ({socket}) => {
+
+    const [notifications, setNotifications] = useState([]);
+
+
+
+    // Getting the notifications 
+    useEffect(() => {
+        socket.on("getNotification", (data) => {
+            setNotifications((prev) => [...prev, data])
+        });
+    }, [socket]);
+
+    console.log(notifications)
+
     return (
         <div className="navbar">
             <span className="logo">Request Portal</span>
