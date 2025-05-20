@@ -32,6 +32,11 @@ const Navbar = ({socket}) => {
         )
     }
 
+    const handleRead = () => {
+        setNotifications([]);
+        setOpen(false);
+    }
+
     return (
         <div className="navbar">
             <span className="logo">Requests Portal</span>
@@ -43,23 +48,10 @@ const Navbar = ({socket}) => {
                     {/* <img src={Notification} alt="" className="iconImg" /> */}
                     {notifications.length > 0 && <div className="counter">{notifications.length}</div>}
                 </div>
-                <div className="icon">
-                    <span className="iconImg">
-                        <Mail/>
-                    </span>
-                    {/* <img src={Notification} alt="" className="iconImg" /> */}
-                    <div className="counter">3</div>
-                </div>
-                <div className="icon">
-                    <span className="iconImg">
-                        <Settings/>
-                    </span>
-                    {/* <img src={Notification} alt="" className="iconImg" /> */}
-                    <div className="counter">2</div>
-                </div>
                 { open && (
                     <div className="notifications">
                         {notifications.map((notification, index) => displayNotification(notification, index))}
+                        <button className="nButton" onClick={() => handleRead()}>Mark all as Read</button>
                     </div>
                 )}
             </div>

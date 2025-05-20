@@ -13,4 +13,11 @@ export const posts = [
         userImg: "https://th.bing.com/th/id/OIP.zc3XRPZxUt4Xt7zDZYLa_wHaHa?w=640&h=640&rs=1&pid=ImgDetMain",
         postImg: "https://images.pexels.com/photos/3497624/pexels-photo-3497624.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
     },
+    {
+        id: 3,
+        username: "john",
+        fullname: "Jane Doe",
+        userImg: "https://th.bing.com/th/id/OIP.IB0XUg8PV5FGxOf0WWDdOQHaHa?cb=iwc2&rs=1&pid=ImgDetMain",
+        postImg: "https://images.pexels.com/photos/3497624/pexels-photo-3497624.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500",
+    },
 ];
