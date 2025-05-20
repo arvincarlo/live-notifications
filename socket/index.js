@@ -71,7 +71,14 @@ io.on('connection', (socket) => {
             senderName,
             type,
         })
+
+        // Push the message to the client
+        io.to(receiver?.socketId).emit('pushNotification', {
+            senderName,
+            type,
+        });
     });
+    
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');

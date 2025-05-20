@@ -12,17 +12,21 @@ const App = () => {
 
     useEffect(() => {
       setSocket(io("http://localhost:8001"));
-      // const socket = io("http://localhost:3000");
       console.log("Socket connected");
-      
-      // console.log(socket?.on("firstEvent", (message) => {
-      //   console.log("Message from server:", message);
-      // }))
     }, []);
 
     // Send the user to the server
     useEffect(() => {
-      socket?.emit("newUser", user)
+      socket?.emit("newUser", user);
+      socket?.on("pushNotification", (data) => {
+        console.log("Received Push notifications: ", data);
+
+        // Create the notification
+        new Notification("New Notification", {
+          body: `${data.senderName} ${data.type === "1" ? "liked" : data.type === "2" ? "commented on" : "shared"} your request.`,
+          icon: "http://localhost:8001/notification.png"
+        })
+      });
     }, [socket, user]);
 
     return (
