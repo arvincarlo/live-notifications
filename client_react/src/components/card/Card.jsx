@@ -6,11 +6,12 @@ const Card = ({socket, user, post}) => {
     const [liked, setLiked] = useState(false);
 
     const handleNotification = (type) => {
-        setLiked(!liked);
+        if (type === "1") setLiked(!liked);
+
         socket.emit("sendNotification", {
             senderName: user,
             receiverName: post.username,
-            type: type.toString()
+            type
         })
     }
 
@@ -23,12 +24,12 @@ const Card = ({socket, user, post}) => {
             <img src={post.postImg} alt="" className="postImg" />
             <div className="interaction">
                 { liked ? (
-                    <HeartHandshake onClick={() => handleNotification(1)}/>
+                    <HeartHandshake onClick={() => handleNotification("1")}/>
                 ) : (
-                    <Heart onClick={() => handleNotification(1)}/>
+                    <Heart onClick={() => handleNotification("1")}/>
                 ) }
-                <MessageCircle onClick={() => handleNotification(2)}/>
-                <Send onClick={() => handleNotification(3)}/>
+                <MessageCircle onClick={() => handleNotification("2")}/>
+                <Send onClick={() => handleNotification("3")}/>
                 {/* <Info className='infoIcon'/> */}
             </div>
         </div>
