@@ -41,7 +41,7 @@ const App = () => {
             </>
           ) : (
             <div className="login">
-              <h1>Login</h1>
+              <h1>Leads Maker</h1>
               <input type="text" placeholder="Username" onChange={(e) => setUserName(e.target.value)}/>
               <button onClick={() => setUser(username)}>Login</button>
             </div>

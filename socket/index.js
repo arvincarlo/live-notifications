@@ -19,28 +19,6 @@ app.use(cors("*"));
 
 app.use(express.json());
 
-// app.post('/send', (request, response) => {
-//     const message = request.body.message;
-//     console.log(message);
-
-//     // Emit the message to all connected clients
-//     io.emit('pushNotification', {
-//         message
-//     });
-
-//     response.status(200).send({
-//         message: 'Message sent successfully'
-//     });
-
-//     io.on('connection', (socket) => {
-//         console.log('New client connected');
-
-//         socket.on('disconnect', () => {
-//             console.log('Client disconnected');
-//         });
-//     })
-// })
-
 let onlineUsers = [];
 
 const addNewUser = (username, socketId) => {
