@@ -1,68 +1,67 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
     Table,
     TableBody,
     TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
-    TableRow,
+    TableRow
 } from "@/components/ui/table"
 
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
-    CardTitle,
+    CardTitle
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Plus } from "lucide-react" 
 import { useState } from "react"
 
 const requestsInitial = [
     {
         id: "REQ001",
-        requestType: "Leave",
-        description: "Annual Leave for June",
+        requestType: "New Lead",
+        description: "Request to add a new sales lead for Acme Corp.",
         status: "Pending",
-        approver: "Jane Smith",
+        approver: "Ian Mabalot",
         requestedBy: "John Doe",
     },
     {
         id: "REQ002",
-        requestType: "Overtime",
-        description: "Overtime for Project X",
+        requestType: "Update Lead",
+        description: "Update contact info for lead: Beta Inc.",
         status: "Approved",
-        approver: "Michael Lee",
+        approver: "Ian Mabalot",
         requestedBy: "Alice Brown",
     },
     {
         id: "REQ003",
-        requestType: "Travel",
-        description: "Business Trip to NY",
+        requestType: "Delete Lead",
+        description: "Remove duplicate lead: Gamma LLC.",
         status: "Rejected",
-        approver: "Sarah Kim",
+        approver: "Ian Mabalot",
         requestedBy: "David Clark",
     },
     {
         id: "REQ004",
-        requestType: "Leave",
-        description: "Sick Leave",
+        requestType: "Assign Lead",
+        description: "Assign lead Delta Ltd. to sales rep Mike.",
         status: "Approved",
-        approver: "Jane Smith",
+        approver: "Ian Mabalot",
         requestedBy: "Emily White",
     },
     {
         id: "REQ005",
-        requestType: "Equipment",
-        description: "Laptop Replacement",
+        requestType: "Lead Status Change",
+        description: "Change status of lead Omega to 'Contacted'.",
         status: "Pending",
-        approver: "Michael Lee",
+        approver: "Ian Mabalot",
         requestedBy: "Chris Evans",
     },
 ]
@@ -70,10 +69,18 @@ const requestsInitial = [
 export default function Dashboard() {
     const [requests, setRequests] = useState(requestsInitial)
     const [open, setOpen] = useState(false)
-    const [form, setForm] = useState({ requestType: "", description: "" })
+    const [form, setForm] = useState({ requestType: "", description: "", approver: "Ian Mabalot" })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value })
+    }
+
+    const handleRequestTypeChange = (value: string) => {
+        setForm({ ...form, requestType: value })
+    }
+
+    const handleApproverChange = (value: string) => {
+        setForm({ ...form, approver: value })
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -85,39 +92,46 @@ export default function Dashboard() {
                 requestType: form.requestType,
                 description: form.description,
                 status: "Pending",
-                approver: "N/A",
+                approver: form.approver,
                 requestedBy: "You",
             },
         ])
-        setForm({ requestType: "", description: "" })
-        setOpen(false)
+        setForm({ requestType: "", description: "", approver: "Ian Mabalot" })
+        setOpen(false);
+
+        console.log("New Request Created:", form)
     }
 
     return (
         <div className="">
-            <Card className="w-full max-w-3xl mx-auto p-4">
+            <Card className="w-full max-w-5xl mx-auto p-4">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>List of requests</CardTitle>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button>Create Request</Button>
+                            <Button className="cursor-pointer"><Plus/>Create Request</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Create Request</DialogTitle>
+                                <DialogTitle>Create a Request</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="requestType">Request Type</Label>
-                                    <Input
-                                        id="requestType"
-                                        name="requestType"
-                                        value={form.requestType}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                                    <Select value={form.requestType} onValueChange={handleRequestTypeChange}>
+                                        <SelectTrigger id="requestType" className="w-full">
+                                            <SelectValue placeholder="Select request type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="New Lead">New Lead</SelectItem>
+                                            <SelectItem value="Update Lead">Update Lead</SelectItem>
+                                            <SelectItem value="Delete Lead">Delete Lead</SelectItem>
+                                            <SelectItem value="Assign Lead">Assign Lead</SelectItem>
+                                            <SelectItem value="Lead Status Change">Lead Status Change</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
-                                <div>
+                                <div className="space-y-2">
                                     <Label htmlFor="description">Description</Label>
                                     <Input
                                         id="description"
@@ -127,10 +141,21 @@ export default function Dashboard() {
                                         required
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="approver">Approver</Label>
+                                    <Select value={form.approver} onValueChange={handleApproverChange}>
+                                        <SelectTrigger id="approver" className="w-full">
+                                            <SelectValue placeholder="Select approver" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Ian Mabalot">Ian Mabalot</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 <DialogFooter>
-                                    <Button type="submit">Submit</Button>
+                                    <Button className="cursor-pointer" type="submit">Submit</Button>
                                     <DialogClose asChild>
-                                        <Button type="button" variant="outline">Cancel</Button>
+                                        <Button className="cursor-pointer" type="button" variant="outline">Cancel</Button>
                                     </DialogClose>
                                 </DialogFooter>
                             </form>
