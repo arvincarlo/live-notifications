@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react" 
 import { useState } from "react"
+import { createRequest } from "@/lib/actions"
+import { create } from "domain"
 
 const requestsInitial = [
     {
@@ -83,7 +85,7 @@ export default function Dashboard() {
         setForm({ ...form, approver: value })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setRequests([
             ...requests,
@@ -98,6 +100,9 @@ export default function Dashboard() {
         ])
         setForm({ requestType: "", description: "", approver: "Ian Mabalot" })
         setOpen(false);
+
+        const response = await createRequest(form);
+        console.log(response);
 
         console.log("New Request Created:", form)
     }
