@@ -1,5 +1,5 @@
 import './card.css'
-import { Heart, MessageCircle, Send, HeartHandshake  } from 'lucide-react';
+import { Check, MessageCircle, Send, HeartHandshake  } from 'lucide-react';
 import { useState } from 'react';
 
 const Card = ({socket, user, post}) => {
@@ -26,9 +26,9 @@ const Card = ({socket, user, post}) => {
             </div>
             <div className="interaction">
                 { liked ? (
-                    <Heart style={{ color: 'red' }} onClick={() => handleNotification("1")}/>
+                    <Check style={{ color: 'green' }} onClick={() => handleNotification("1")}/>
                 ) : (
-                    <Heart onClick={() => handleNotification("1")}/>
+                    <Check onClick={() => handleNotification("1")}/>
                 ) }
                 <MessageCircle onClick={() => handleNotification("2")}/>
                 <Send onClick={() => handleNotification("3")}/>
