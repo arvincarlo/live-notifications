@@ -1,11 +1,12 @@
 import { toast } from "sonner";
+const API_REQUEST_BASE_URL = process.env.NEXT_PUBLIC_API_REQUEST_BASE_URL || "http://localhost:3001";
 
 export async function createRequest(data: any) {
     const now = new Date().toLocaleString();
 
     // Send a POST request to the server with the request data
     try {
-        const response = await fetch("http://localhost:3001/requests", {
+        const response = await fetch(`${API_REQUEST_BASE_URL}/requests`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
