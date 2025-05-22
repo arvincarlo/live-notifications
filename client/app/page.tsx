@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      { user ? (
+      { !user ? (
         <Card className="w-[350px]">
           <CardHeader>
             <CardTitle>Leads Maker</CardTitle>

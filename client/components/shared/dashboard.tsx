@@ -21,55 +21,21 @@ import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogT
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react" 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createRequest } from "@/lib/actions"
-import { create } from "domain"
 
-const requestsInitial = [
-    {
-        id: "REQ001",
-        requestType: "New Lead",
-        description: "Request to add a new sales lead for Acme Corp.",
-        status: "Pending",
-        approver: "Ian Mabalot",
-        requestedBy: "John Doe",
-    },
-    {
-        id: "REQ002",
-        requestType: "Update Lead",
-        description: "Update contact info for lead: Beta Inc.",
-        status: "Approved",
-        approver: "Ian Mabalot",
-        requestedBy: "Alice Brown",
-    },
-    {
-        id: "REQ003",
-        requestType: "Delete Lead",
-        description: "Remove duplicate lead: Gamma LLC.",
-        status: "Rejected",
-        approver: "Ian Mabalot",
-        requestedBy: "David Clark",
-    },
-    {
-        id: "REQ004",
-        requestType: "Assign Lead",
-        description: "Assign lead Delta Ltd. to sales rep Mike.",
-        status: "Approved",
-        approver: "Ian Mabalot",
-        requestedBy: "Emily White",
-    },
-    {
-        id: "REQ005",
-        requestType: "Lead Status Change",
-        description: "Change status of lead Omega to 'Contacted'.",
-        status: "Pending",
-        approver: "Ian Mabalot",
-        requestedBy: "Chris Evans",
-    },
-]
+type Request = {
+    id: number;
+    requestType: string;
+    description: string;
+    status: string;
+    approver: string;
+    requestedBy: string;
+    dateCreated?: string;
+};
 
 export default function Dashboard({user}: {user: string}) {
-    const [requests, setRequests] = useState(requestsInitial)
+    const [requests, setRequests] = useState<Request[]>([])
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({ requestType: "", description: "", approver: "Ian Mabalot" })
 
@@ -87,36 +53,42 @@ export default function Dashboard({user}: {user: string}) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setRequests([
-            ...requests,
-            {
-                id: `REQ${(requests.length + 1).toString().padStart(3, "0")}`,
-                requestType: form.requestType,
-                description: form.description,
-                status: "Pending",
-                approver: form.approver,
-                requestedBy: user,
-            },
-        ])
         setForm({ requestType: "", description: "", approver: "Ian Mabalot" })
         setOpen(false);
 
         const formRequest = {
             ...form,
-            requestedBy: "user",
+            requestedBy: user,
             status: "Pending",
             dateCreated: new Date().toISOString(),
             
         }
 
         const response = await createRequest(formRequest);
+        
+        // Update the table
+        setRequests([...requests, {...response}]);
     }
+
+    // Get the request by user
+    useEffect(() => {
+        async function getRequestsByUser(user: string) {
+            const response = await fetch(`http://localhost:3001/requests/requestedBy/${user}`);
+            const data = await response.json();
+            
+            if (response.ok) {
+                setRequests(data);
+            }
+        }
+
+        getRequestsByUser(user)
+    }, []);
 
     return (
         <div className="">
             <Card className="w-full max-w-5xl mx-auto p-4">
                 <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>List of requests</CardTitle>
+                    <CardTitle>List of requests ({user})</CardTitle>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
                             <Button className="cursor-pointer"><Plus/>Create Request</Button>
@@ -159,6 +131,7 @@ export default function Dashboard({user}: {user: string}) {
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="Ian Mabalot">Ian Mabalot</SelectItem>
+                                            <SelectItem value="John Doe">John Doe</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
