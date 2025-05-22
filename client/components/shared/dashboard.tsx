@@ -68,7 +68,7 @@ const requestsInitial = [
     },
 ]
 
-export default function Dashboard() {
+export default function Dashboard({user}: {user: string}) {
     const [requests, setRequests] = useState(requestsInitial)
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({ requestType: "", description: "", approver: "Ian Mabalot" })
@@ -95,16 +95,21 @@ export default function Dashboard() {
                 description: form.description,
                 status: "Pending",
                 approver: form.approver,
-                requestedBy: "You",
+                requestedBy: user,
             },
         ])
         setForm({ requestType: "", description: "", approver: "Ian Mabalot" })
         setOpen(false);
 
-        const response = await createRequest(form);
-        console.log(response);
+        const formRequest = {
+            ...form,
+            requestedBy: "user",
+            status: "Pending",
+            dateCreated: new Date().toISOString(),
+            
+        }
 
-        console.log("New Request Created:", form)
+        const response = await createRequest(formRequest);
     }
 
     return (

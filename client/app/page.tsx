@@ -47,7 +47,7 @@ export default function Home() {
           </CardFooter>
         </Card>
       ) : (
-        <Dashboard/>
+        <Dashboard user={user}/>
       )}
     </div>
   )
