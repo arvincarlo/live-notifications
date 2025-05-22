@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react" 
 import { useEffect, useState } from "react"
-import { createRequest } from "@/lib/actions"
+import { createNotification, createRequest } from "@/lib/actions"
 
 type Request = {
     id: number;
@@ -59,7 +59,7 @@ export default function Dashboard({user}: {user: string}) {
         const formRequest = {
             ...form,
             requestedBy: user,
-            status: "Pending",
+            status: "For Approval",
             dateCreated: new Date().toISOString(),
             
         }
@@ -68,6 +68,20 @@ export default function Dashboard({user}: {user: string}) {
         
         // Update the table
         setRequests([...requests, {...response}]);
+
+        // Create the notification
+        const notification =  {
+            recipient: response.approver,
+            sender: response.requestedBy,
+            type: response.requestType,
+            isRead: false,
+            title: "New Request created",
+            message: `${response.requestedBy} just sent you a lead request.`,
+            createdAt: new Date().toISOString()
+        }
+        
+        const res = await createNotification(notification);
+        
     }
 
     // Get the request by user
