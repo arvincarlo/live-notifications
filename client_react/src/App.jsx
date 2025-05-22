@@ -2,13 +2,14 @@ import Card from './components/card/Card';
 import Navbar from './components/navbar/Navbar';
 import './App.css';
 import { useEffect, useState } from 'react';
-import {posts} from './data';
+// import {posts} from './data';
 import { io } from 'socket.io-client';
 
 const App = () => {
     const [username, setUserName] = useState("");
     const [user, setUser] = useState("");
     const [socket, setSocket] = useState(null);
+    const [requests, setRequests] = useState([]);
 
     useEffect(() => {
       setSocket(io("http://localhost:8001"));
@@ -17,6 +18,16 @@ const App = () => {
 
     // Send the user to the server
     useEffect(() => {
+      // Get all requests
+      const getRequests = async () => {
+        const response = await fetch("http://localhost:3001/requests");
+        const data = await response.json();
+        setRequests(data);
+      }
+
+      // Get notification if there is a user
+      if (user) getRequests();
+
       socket?.emit("newUser", user);
       socket?.on("pushNotification", (data) => {
         console.log("Received Push notifications: ", data);
@@ -34,9 +45,15 @@ const App = () => {
           { user ? (
             <> 
               <Navbar socket={socket}/>
-              {posts.map((post) => (
-                <Card socket={socket} user={user} key={post.id} post={post} />
-              ))}
+              {!(requests.length > 0) ? (
+                <>No request yet.</>
+              ) : (
+                <>
+                  {requests.map((request) => (
+                    <Card socket={socket} user={user} key={request.id} request={request} />
+                  ))}
+                </>
+              )}
               <span className="username">Welcome {user}</span>
             </>
           ) : (

@@ -1,8 +1,8 @@
-import './card.css'
-import { Check, MessageCircle, Send, HeartHandshake  } from 'lucide-react';
+import { Check, MessageCircle, Send } from 'lucide-react';
 import { useState } from 'react';
+import './card.css';
 
-const Card = ({socket, user, post}) => {
+const Card = ({socket, user, request}) => {
     const [liked, setLiked] = useState(false);
 
     const handleNotification = (type) => {
@@ -10,19 +10,31 @@ const Card = ({socket, user, post}) => {
 
         socket.emit("sendNotification", {
             senderName: user,
-            receiverName: post.username,
+            receiverName: request.username,
             type
         })
     }
 
+    const getAvatarUrl = (name = "") => {
+        // Use DiceBear Avatars API for random avatars based on name/initials
+        const seed = encodeURIComponent(name || "user");
+        return `https://api.dicebear.com/7.x/initials/svg?seed=${seed}&backgroundType=gradientLinear`;
+    };
+
     return (
         <div className="card">
             <div className="info">
-                <img src={post.userImg} alt="" className="userImg" />
-                <span>{post.fullname}</span>
+                <img
+                    src={getAvatarUrl(request.requestedBy)}
+                    alt={request.requestedBy}
+                    className="userImg"
+                />
+                <span>{request.requestedBy}</span>
             </div>
-            <div className="postContent">
-                <span>{post.content}</span>
+            <div className="requestContent">
+                <span>{request.description}</span>
+                <span>{request.requestType}</span>
+                <span>{request.status}</span>
             </div>
             <div className="interaction">
                 { liked ? (
