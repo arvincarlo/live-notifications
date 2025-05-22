@@ -20,7 +20,7 @@ const App = () => {
     useEffect(() => {
       // Get all requests
       const getRequests = async () => {
-        const response = await fetch("http://localhost:3001/requests");
+        const response = await fetch(`http://localhost:3001/requests/approver/${user}`);
         const data = await response.json();
         setRequests(data);
       }

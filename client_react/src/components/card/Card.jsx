@@ -1,4 +1,4 @@
-import { Check, MessageCircle, Send } from 'lucide-react';
+import { Check, MessageCircle, Send, X } from 'lucide-react';
 import { useState } from 'react';
 import './card.css';
 
@@ -15,9 +15,9 @@ const Card = ({socket, user, request}) => {
         })
     }
 
-    const getAvatarUrl = (name = "") => {
+    const getAvatarUrl = (requestedBy = "") => {
         // Use DiceBear Avatars API for random avatars based on name/initials
-        const seed = encodeURIComponent(name || "user");
+        const seed = encodeURIComponent(requestedBy || "user");
         return `https://api.dicebear.com/7.x/initials/svg?seed=${seed}&backgroundType=gradientLinear`;
     };
 
@@ -42,7 +42,7 @@ const Card = ({socket, user, request}) => {
                 ) : (
                     <Check onClick={() => handleNotification("1")}/>
                 ) }
-                <MessageCircle onClick={() => handleNotification("2")}/>
+                <X onClick={() => handleNotification("2")}/>
                 <Send onClick={() => handleNotification("3")}/>
                 {/* <Info className='infoIcon'/> */}
             </div>
