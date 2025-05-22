@@ -1,18 +1,30 @@
-import { Check, MessageCircle, Send, X } from 'lucide-react';
+import { Check, MessageCircle, X } from 'lucide-react';
 import { useState } from 'react';
 import './card.css';
 
 const Card = ({socket, user, request}) => {
-    const [liked, setLiked] = useState(false);
+    const [approved, setApproved] = useState(false);
 
-    const handleNotification = (type) => {
-        if (type === "1") setLiked(!liked);
+    const handleNotification = async (type) => {
+        if (type === "Approve") setApproved(!approved);
 
-        socket.emit("sendNotification", {
-            senderName: user,
-            receiverName: request.username,
-            type
-        })
+        // Save the approved request
+        const response = await fetch(`http://localhost:3001/requests/${request.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                status: "Approved"
+            }),
+        });
+        
+        if (response.ok) {
+            socket.emit("sendNotification", {
+                senderName: user,
+                receiverName: request.requestedBy
+            })
+        }
     }
 
     const getAvatarUrl = (requestedBy = "") => {
@@ -37,13 +49,13 @@ const Card = ({socket, user, request}) => {
                 <span>{request.status}</span>
             </div>
             <div className="interaction">
-                { liked ? (
-                    <Check style={{ color: 'green' }} onClick={() => handleNotification("1")}/>
+                { approved ? (
+                    <Check style={{ color: 'green' }} onClick={() => handleNotification("Approve")}/>
                 ) : (
-                    <Check onClick={() => handleNotification("1")}/>
+                    <Check onClick={() => handleNotification("Approve")}/>
                 ) }
-                <X onClick={() => handleNotification("2")}/>
-                <Send onClick={() => handleNotification("3")}/>
+                <X onClick={() => handleNotification("Decline")}/>
+                <MessageCircle onClick={() => handleNotification("Comment")}/>
                 {/* <Info className='infoIcon'/> */}
             </div>
         </div>

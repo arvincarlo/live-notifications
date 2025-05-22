@@ -39,8 +39,9 @@ io.on('connection', (socket) => {
     console.log("Socket ID: ", socket.id);
 
     socket.on('newUser', (username) => {
+        console.log(username);
         addNewUser(username, socket.id)
-        console.log(onlineUsers)
+        console.log(onlineUsers, "udpated")
     });
 
     socket.on("sendNotification", ({senderName, receiverName, type, message}) => {

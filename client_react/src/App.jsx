@@ -63,7 +63,7 @@ const App = () => {
         <div className="container">
           { user ? (
             <> 
-              <Navbar socket={socket}/>
+              <Navbar socket={socket} user={user}/>
               {!(requests.length > 0) ? (
                 <>No request yet.</>
               ) : (

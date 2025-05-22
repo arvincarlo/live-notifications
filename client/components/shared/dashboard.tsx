@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus } from "lucide-react" 
+import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createNotification, createRequest } from "@/lib/actions"
 
@@ -36,7 +36,7 @@ type Request = {
     dateCreated?: string;
 };
 
-export default function Dashboard({user}: {user: string}) {
+export default function Dashboard({ user }: { user: string }) {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [requests, setRequests] = useState<Request[]>([])
     const [open, setOpen] = useState(false)
@@ -64,16 +64,16 @@ export default function Dashboard({user}: {user: string}) {
             requestedBy: user,
             status: "For Approval",
             dateCreated: new Date().toISOString(),
-            
+
         }
 
         const response = await createRequest(formRequest);
-        
+
         // Update the table
-        setRequests([...requests, {...response}]);
+        setRequests([...requests, { ...response }]);
 
         // Create the notification
-        const notification =  {
+        const notification = {
             recipient: response.approver,
             sender: response.requestedBy,
             type: response.requestType,
@@ -82,7 +82,7 @@ export default function Dashboard({user}: {user: string}) {
             message: `${response.requestedBy} just sent you a Lead Request.`,
             createdAt: new Date().toISOString()
         }
-        
+
         const res = await createNotification(notification);
         if (res) handleNotification(res);
     }
@@ -95,24 +95,50 @@ export default function Dashboard({user}: {user: string}) {
         })
     }
 
-    // Get the request by user
+    
     useEffect(() => {
+        // Connect to socket server
+        setSocket(io("http://localhost:8001"));
+        console.log("Socket connected in client");
+    }, []);
+    
+    useEffect(() => {
+        // Get the request by user
         async function getRequestsByUser(user: string) {
             const response = await fetch(`http://localhost:3001/requests/requestedBy/${user}`);
             const data = await response.json();
-            
+
             if (response.ok) {
                 setRequests(data);
             }
         }
 
-        getRequestsByUser(user);
-        console.log(requests);
+        if (user) getRequestsByUser(user);
 
-        // Connect to socket server
-        setSocket(io("http://localhost:8001"));
-        console.log("Socket connected in client");
-    }, []);
+        // Subsribe the user to the socket
+        socket?.emit("newUser", user);
+
+        socket?.on("pushNotification", (data) => {
+            console.log("Received Push notifications: ", data);
+
+            // Create the notification
+            new Notification("New Notification", {
+                body: `${data.message}`,
+                icon: "http://localhost:8001/notification.png"
+            })
+        });
+
+        // Listen for getNotification and refresh requests
+        socket?.on("getNotification", () => {
+            getRequestsByUser(user);
+        });
+
+        // Clean up listeners on unmount
+        return () => {
+            socket?.off("pushNotification");
+            socket?.off("getNotification");
+        };
+    }, [socket, user]);
 
     return (
         <div className="">
@@ -121,7 +147,7 @@ export default function Dashboard({user}: {user: string}) {
                     <CardTitle>List of requests ({user})</CardTitle>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button className="cursor-pointer"><Plus/>Create Request</Button>
+                            <Button className="cursor-pointer"><Plus />Create Request</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>

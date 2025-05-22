@@ -2,21 +2,30 @@ import { Bell } from "lucide-react";
 import { useEffect, useState } from 'react';
 import './navbar.css';
 
-const Navbar = ({socket}) => {
+const Navbar = ({socket, user}) => {
 
     const [notifications, setNotifications] = useState([]);
     const [open, setOpen] = useState(false);
 
-    // Getting the notifications 
     useEffect(() => {
+        // Getting all the notifications based on recipient
+        const getNotifications = async () => {
+            const response = await fetch(`http://localhost:3001/notifications/recipient/${user}`);
+            let data = await response.json();
+
+            // Sort the request id in descending order
+            data = data.sort((a, b) => b.id - a.id);
+            setNotifications(data);
+        }
+
+        if (user) getNotifications();
+
         socket.on("getNotification", (data) => {
             setNotifications((prev) => [...prev, data])
         });
-    }, [socket]);
+    }, [socket, user]);
 
-    console.log(notifications);
-
-    const displayNotification = ({senderName, type}, index) => {
+    const displayNotification = ({sender, message, type, id}) => {
         let action;
 
         if (type === "1") {
@@ -28,7 +37,7 @@ const Navbar = ({socket}) => {
         }
 
         return (
-            <span key={index} className="notification">{`${senderName} ${action} your request.`}</span>
+            <span key={id} className="notification">{`${sender} requested for (${type})`}</span>
         )
     }
 
@@ -53,7 +62,7 @@ const Navbar = ({socket}) => {
                         {!notifications.length && "No notifications yet."}
                         {notifications.length > 0 && (
                             <>
-                                {notifications.map((notification, index) => displayNotification(notification, index))}
+                                {notifications.map((notification) => displayNotification(notification))}
                                 <button className="nButton" onClick={() => handleRead()}>Mark all as Read</button>
                             </>
                         )}
