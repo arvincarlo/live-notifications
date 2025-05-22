@@ -34,7 +34,7 @@ const App = () => {
 
         // Create the notification
         new Notification("New Notification", {
-          body: `${data.senderName} ${data.type === "1" ? "liked" : data.type === "2" ? "commented on" : "shared"} your request.`,
+          body: `${data.message}`,
           icon: "http://localhost:8001/notification.png"
         })
       });

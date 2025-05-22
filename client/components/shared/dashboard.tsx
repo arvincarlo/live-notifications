@@ -24,6 +24,8 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import { createNotification, createRequest } from "@/lib/actions"
 
+import { io, Socket } from "socket.io-client"
+
 type Request = {
     id: number;
     requestType: string;
@@ -35,6 +37,7 @@ type Request = {
 };
 
 export default function Dashboard({user}: {user: string}) {
+    const [socket, setSocket] = useState<Socket | null>(null);
     const [requests, setRequests] = useState<Request[]>([])
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({ requestType: "", description: "", approver: "Ian Mabalot" })
@@ -76,12 +79,20 @@ export default function Dashboard({user}: {user: string}) {
             type: response.requestType,
             isRead: false,
             title: "New Request created",
-            message: `${response.requestedBy} just sent you a lead request.`,
+            message: `${response.requestedBy} just sent you a Lead Request.`,
             createdAt: new Date().toISOString()
         }
         
         const res = await createNotification(notification);
-        
+        if (res) handleNotification(res);
+    }
+
+    const handleNotification = (res: any) => {
+        socket?.emit("sendNotification", {
+            senderName: user,
+            receiverName: res.recipient,
+            message: res.message
+        })
     }
 
     // Get the request by user
@@ -95,7 +106,12 @@ export default function Dashboard({user}: {user: string}) {
             }
         }
 
-        getRequestsByUser(user)
+        getRequestsByUser(user);
+        console.log(requests);
+
+        // Connect to socket server
+        setSocket(io("http://localhost:8001"));
+        console.log("Socket connected in client");
     }, []);
 
     return (

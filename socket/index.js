@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
         console.log(onlineUsers)
     });
 
-    socket.on("sendNotification", ({senderName, receiverName, type}) => {
+    socket.on("sendNotification", ({senderName, receiverName, type, message}) => {
         const receiver = getUser(receiverName);
         io.to(receiver?.socketId).emit("getNotification", {
             senderName,
@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
         // Push the message to the client
         io.to(receiver?.socketId).emit('pushNotification', {
             senderName,
-            type,
+            message,
         });
     });
     
