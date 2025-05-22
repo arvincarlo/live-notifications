@@ -1,6 +1,6 @@
-import './navbar.css'
-import { Bell, Mail, Settings } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useEffect, useState } from 'react';
+import './navbar.css';
 
 const Navbar = ({socket}) => {
 

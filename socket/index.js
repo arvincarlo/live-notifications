@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
         const receiver = getUser(receiverName);
         io.to(receiver?.socketId).emit("getNotification", {
             senderName,
-            type,
+            message,
         })
 
         // Push the message to the client

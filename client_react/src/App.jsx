@@ -11,6 +11,8 @@ const App = () => {
     const [socket, setSocket] = useState(null);
     const [requests, setRequests] = useState([]);
 
+    
+
     useEffect(() => {
       setSocket(io("http://localhost:8001"));
       console.log("Socket connected");
@@ -18,17 +20,23 @@ const App = () => {
 
     // Send the user to the server
     useEffect(() => {
+
       // Get all requests
       const getRequests = async () => {
         const response = await fetch(`http://localhost:3001/requests/approver/${user}`);
-        const data = await response.json();
+        let data = await response.json();
+
+        // Sort the request id in descending order
+        data = data.sort((a, b) => b.id - a.id);
         setRequests(data);
       }
+      
 
       // Get notification if there is a user
       if (user) getRequests();
 
       socket?.emit("newUser", user);
+
       socket?.on("pushNotification", (data) => {
         console.log("Received Push notifications: ", data);
 
@@ -38,6 +46,17 @@ const App = () => {
           icon: "http://localhost:8001/notification.png"
         })
       });
+
+      // Listen for getNotification and refresh requests
+      socket?.on("getNotification", () => {
+        getRequests();
+      });
+
+      // Clean up listeners on unmount
+      return () => {
+        socket?.off("pushNotification");
+        socket?.off("getNotification");
+      };
     }, [socket, user]);
 
     return (
