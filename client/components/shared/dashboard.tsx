@@ -25,6 +25,9 @@ import { useEffect, useState } from "react"
 import { createNotification, createRequest } from "@/lib/actions"
 
 import { io, Socket } from "socket.io-client"
+import { Badge } from "../ui/badge"
+
+const API_NOTIFICATIONS = process.env.NEXT_PUBLIC_API_NOTIFICATIONS || "http://localhost:8082";
 
 type Request = {
     id: number;
@@ -98,7 +101,7 @@ export default function Dashboard({ user }: { user: string }) {
     
     useEffect(() => {
         // Connect to socket server
-        setSocket(io("http://localhost:8001"));
+        setSocket(io(API_NOTIFICATIONS));
         console.log("Socket connected in client");
     }, []);
     
@@ -124,7 +127,7 @@ export default function Dashboard({ user }: { user: string }) {
             // Create the notification
             new Notification("New Notification", {
                 body: `${data.message}`,
-                icon: "http://localhost:8001/notification.png"
+                icon: `${API_NOTIFICATIONS}/notification.png`
             })
         });
 
@@ -142,6 +145,7 @@ export default function Dashboard({ user }: { user: string }) {
 
     return (
         <div className="">
+            <div className="flex text-xl font-bold justify-end my-4">Welcome, {user}</div>
             <Card className="w-full max-w-5xl mx-auto p-4">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>List of requests ({user})</CardTitle>
@@ -220,7 +224,7 @@ export default function Dashboard({ user }: { user: string }) {
                                     <TableCell className="font-medium">{req.id}</TableCell>
                                     <TableCell>{req.requestType}</TableCell>
                                     <TableCell>{req.description}</TableCell>
-                                    <TableCell>{req.status}</TableCell>
+                                    <TableCell><Badge variant={req.status == "Approved" ? "" : "outline"}>{req.status}</Badge></TableCell>
                                     <TableCell>{req.approver}</TableCell>
                                     <TableCell>{req.requestedBy}</TableCell>
                                 </TableRow>

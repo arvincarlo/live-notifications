@@ -14,7 +14,7 @@ const App = () => {
     
 
     useEffect(() => {
-      setSocket(io("http://localhost:8001"));
+      setSocket(io("http://localhost:8082"));
       console.log("Socket connected");
     }, []);
 
@@ -43,7 +43,7 @@ const App = () => {
         // Create the notification
         new Notification("New Notification", {
           body: `${data.message}`,
-          icon: "http://localhost:8001/notification.png"
+          icon: "http://localhost:8082/notification.png"
         })
       });
 
@@ -73,7 +73,7 @@ const App = () => {
                   ))}
                 </>
               )}
-              <span className="username">Welcome {user}</span>
+              <span className="username">Welcome, {user}</span>
             </>
           ) : (
             <div className="login">
