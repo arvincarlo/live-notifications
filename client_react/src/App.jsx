@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 // import {posts} from './data';
 import { io } from 'socket.io-client';
 
+const notifServiceUrl = process.env.NOTIFICATION_SERVICE_URL;
+
 const App = () => {
     const [username, setUserName] = useState("");
     const [user, setUser] = useState("");
@@ -14,7 +16,7 @@ const App = () => {
     
 
     useEffect(() => {
-      setSocket(io("http://localhost:8082"));
+      setSocket(io(notifServiceUrl));
       console.log("Socket connected");
     }, []);
 
@@ -43,7 +45,7 @@ const App = () => {
         // Create the notification
         new Notification("New Notification", {
           body: `${data.message}`,
-          icon: "http://localhost:8082/notification.png"
+          icon: `${notifServiceUrl}/notification.png`
         })
       });
 

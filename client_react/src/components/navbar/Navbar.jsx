@@ -21,7 +21,7 @@ const Navbar = ({socket, user}) => {
         if (user) getNotifications();
 
         socket.on("getNotification", (data) => {
-            setNotifications((prev) => [...prev, data])
+            getNotifications();
         });
     }, [socket, user]);
 
