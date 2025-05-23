@@ -126,7 +126,7 @@ export default function Dashboard({ user }: { user: string }) {
 
             // Create the notification
             new Notification("New Notification", {
-                body: `${data.message}`,
+                body: `${data.senderName} approved your request.`,
                 icon: `${API_NOTIFICATIONS}/notification.png`
             })
         });

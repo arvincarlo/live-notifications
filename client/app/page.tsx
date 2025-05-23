@@ -35,10 +35,6 @@ export default function Home() {
                   <Label htmlFor="name">Username</Label>
                   <Input onChange={(e) => setUsername(e.target.value)} id="name" />
                 </div>
-                {/* <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="password">Password</Label>
-                  <Input type="password" id="password" />
-                </div> */}
               </div>
             </form>
           </CardContent>
