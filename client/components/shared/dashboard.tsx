@@ -27,6 +27,13 @@ import { createNotification, createRequest } from "@/lib/actions"
 import { io, Socket } from "socket.io-client"
 import { Badge } from "../ui/badge"
 
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+
 const API_NOTIFICATIONS = process.env.NEXT_PUBLIC_API_NOTIFICATIONS || "http://localhost:8082";
 
 type Request = {
@@ -98,13 +105,13 @@ export default function Dashboard({ user }: { user: string }) {
         })
     }
 
-    
+
     useEffect(() => {
         // Connect to socket server
         setSocket(io(API_NOTIFICATIONS));
         console.log("Socket connected in client");
     }, []);
-    
+
     useEffect(() => {
         // Get the request by user
         async function getRequestsByUser(user: string) {
@@ -114,6 +121,16 @@ export default function Dashboard({ user }: { user: string }) {
             if (response.ok) {
                 setRequests(data);
             }
+        }
+
+        // Getting all the notifications based on recipient
+        const getNotifications = async () => {
+            const response = await fetch(`http://localhost:3001/notifications/recipient/${user}`);
+            let data = await response.json();
+
+            // Sort the request id in descending order
+            data = data.sort((a, b) => b.id - a.id);
+            setNotifications(data);
         }
 
         if (user) getRequestsByUser(user);
@@ -144,95 +161,122 @@ export default function Dashboard({ user }: { user: string }) {
     }, [socket, user]);
 
     return (
-        <div className="">
+        <div className="w-full max-w-5xl mx-auto p-4">
             <div className="flex text-xl font-bold justify-end my-4">Welcome, {user}</div>
-            <Card className="w-full max-w-5xl mx-auto p-4">
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>List of requests ({user})</CardTitle>
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="cursor-pointer"><Plus />Create Request</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Create a Request</DialogTitle>
-                            </DialogHeader>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="requestType">Request Type</Label>
-                                    <Select value={form.requestType} onValueChange={handleRequestTypeChange}>
-                                        <SelectTrigger id="requestType" className="w-full">
-                                            <SelectValue placeholder="Select request type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="New Lead">New Lead</SelectItem>
-                                            <SelectItem value="Update Lead">Update Lead</SelectItem>
-                                            <SelectItem value="Delete Lead">Delete Lead</SelectItem>
-                                            <SelectItem value="Assign Lead">Assign Lead</SelectItem>
-                                            <SelectItem value="Lead Status Change">Lead Status Change</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="description">Description</Label>
-                                    <Input
-                                        id="description"
-                                        name="description"
-                                        value={form.description}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="approver">Approver</Label>
-                                    <Select value={form.approver} onValueChange={handleApproverChange}>
-                                        <SelectTrigger id="approver" className="w-full">
-                                            <SelectValue placeholder="Select approver" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Ian Mabalot">Ian Mabalot</SelectItem>
-                                            <SelectItem value="John Doe">John Doe</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <DialogFooter>
-                                    <Button className="cursor-pointer" type="submit">Submit</Button>
-                                    <DialogClose asChild>
-                                        <Button className="cursor-pointer" type="button" variant="outline">Cancel</Button>
-                                    </DialogClose>
-                                </DialogFooter>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableCaption>A list of your recent requests.</TableCaption>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[100px]">ID</TableHead>
-                                <TableHead>Request Type</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Approver</TableHead>
-                                <TableHead>Requested By</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {requests.map((req) => (
-                                <TableRow key={req.id}>
-                                    <TableCell className="font-medium">{req.id}</TableCell>
-                                    <TableCell>{req.requestType}</TableCell>
-                                    <TableCell>{req.description}</TableCell>
-                                    <TableCell><Badge variant={req.status == "Approved" ? "" : "outline"}>{req.status}</Badge></TableCell>
-                                    <TableCell>{req.approver}</TableCell>
-                                    <TableCell>{req.requestedBy}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            <Tabs defaultValue="requests" className="">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger className="cursor-pointer" value="requests">Requests</TabsTrigger>
+                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications <Badge>10</Badge></TabsTrigger>
+                </TabsList>
+                <TabsContent value="requests">
+                    <div className="">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <CardTitle>List of requests ({user})</CardTitle>
+                                <Dialog open={open} onOpenChange={setOpen}>
+                                    <DialogTrigger asChild>
+                                        <Button className="cursor-pointer"><Plus />Create Request</Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Create a Request</DialogTitle>
+                                        </DialogHeader>
+                                        <form onSubmit={handleSubmit} className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="requestType">Request Type</Label>
+                                                <Select value={form.requestType} onValueChange={handleRequestTypeChange}>
+                                                    <SelectTrigger id="requestType" className="w-full">
+                                                        <SelectValue placeholder="Select request type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="New Lead">New Lead</SelectItem>
+                                                        <SelectItem value="Update Lead">Update Lead</SelectItem>
+                                                        <SelectItem value="Delete Lead">Delete Lead</SelectItem>
+                                                        <SelectItem value="Assign Lead">Assign Lead</SelectItem>
+                                                        <SelectItem value="Lead Status Change">Lead Status Change</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="description">Description</Label>
+                                                <Input
+                                                    id="description"
+                                                    name="description"
+                                                    value={form.description}
+                                                    onChange={handleChange}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="approver">Approver</Label>
+                                                <Select value={form.approver} onValueChange={handleApproverChange}>
+                                                    <SelectTrigger id="approver" className="w-full">
+                                                        <SelectValue placeholder="Select approver" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Ian Mabalot">Ian Mabalot</SelectItem>
+                                                        <SelectItem value="John Doe">John Doe</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <DialogFooter>
+                                                <Button className="cursor-pointer" type="submit">Submit</Button>
+                                                <DialogClose asChild>
+                                                    <Button className="cursor-pointer" type="button" variant="outline">Cancel</Button>
+                                                </DialogClose>
+                                            </DialogFooter>
+                                        </form>
+                                    </DialogContent>
+                                </Dialog>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableCaption>A list of your recent requests.</TableCaption>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">ID</TableHead>
+                                            <TableHead>Request Type</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Approver</TableHead>
+                                            <TableHead>Requested By</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {requests.map((req) => (
+                                            <TableRow key={req.id}>
+                                                <TableCell className="font-medium">{req.id}</TableCell>
+                                                <TableCell>{req.requestType}</TableCell>
+                                                <TableCell>{req.description}</TableCell>
+                                                <TableCell><Badge variant={req.status == "Approved" ? "" : "outline"}>{req.status}</Badge></TableCell>
+                                                <TableCell>{req.approver}</TableCell>
+                                                <TableCell>{req.requestedBy}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+                <TabsContent value="notifications">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Notifications</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <div className="space-y-1">
+                            <Label htmlFor="current">Current password</Label>
+                            <Input id="current" type="password" />
+                            </div>
+                            <div className="space-y-1">
+                            <Label htmlFor="new">New password</Label>
+                            <Input id="new" type="password" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }
