@@ -34,6 +34,8 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 
+import { Bell, CalendarCheck } from 'lucide-react';
+
 const API_NOTIFICATIONS = process.env.NEXT_PUBLIC_API_NOTIFICATIONS || "http://localhost:8082";
 
 type Request = {
@@ -49,6 +51,7 @@ type Request = {
 export default function Dashboard({ user }: { user: string }) {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [requests, setRequests] = useState<Request[]>([])
+    const [notifications, setNotifications] = useState<Request[]>([])
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({ requestType: "", description: "", approver: "Ian Mabalot" })
 
@@ -114,26 +117,29 @@ export default function Dashboard({ user }: { user: string }) {
 
     useEffect(() => {
         // Get the request by user
-        async function getRequestsByUser(user: string) {
-            const response = await fetch(`http://localhost:3001/requests/requestedBy/${user}`);
-            const data = await response.json();
+        // async function getRequestsByUser(user: string) {
+        //     const response = await fetch(`http://localhost:8082/requests/requestedBy/${user}`);
+        //     const data = await response.json();
 
-            if (response.ok) {
-                setRequests(data);
-            }
-        }
+        //     if (response.ok) {
+        //         setRequests(data);
+        //     }
+        // }
 
         // Getting all the notifications based on recipient
         const getNotifications = async () => {
-            const response = await fetch(`http://localhost:3001/notifications/recipient/${user}`);
+            const response = await fetch(`http://localhost:8082/notifications/recipient/${user}`);
             let data = await response.json();
 
             // Sort the request id in descending order
             data = data.sort((a, b) => b.id - a.id);
             setNotifications(data);
         }
-
-        if (user) getRequestsByUser(user);
+        
+        if (user) {
+            // getRequestsByUser(user);
+            getNotifications();
+        }
 
         // Subsribe the user to the socket
         socket?.emit("newUser", user);
@@ -150,7 +156,8 @@ export default function Dashboard({ user }: { user: string }) {
 
         // Listen for getNotification and refresh requests
         socket?.on("getNotification", () => {
-            getRequestsByUser(user);
+            // getRequestsByUser(user);
+            getNotifications();
         });
 
         // Clean up listeners on unmount
@@ -166,7 +173,7 @@ export default function Dashboard({ user }: { user: string }) {
             <Tabs defaultValue="requests" className="">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger className="cursor-pointer" value="requests">Requests</TabsTrigger>
-                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications <Badge>10</Badge></TabsTrigger>
+                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications <Badge>{notifications?.length}</Badge></TabsTrigger>
                 </TabsList>
                 <TabsContent value="requests">
                     <div className="">
@@ -265,13 +272,27 @@ export default function Dashboard({ user }: { user: string }) {
                             <CardTitle>Notifications</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            <div className="space-y-1">
-                            <Label htmlFor="current">Current password</Label>
-                            <Input id="current" type="password" />
-                            </div>
-                            <div className="space-y-1">
-                            <Label htmlFor="new">New password</Label>
-                            <Input id="new" type="password" />
+                            <div className="space-y-4">
+                                {notifications.length === 0 && (
+                                    <div className="flex items-start gap-3">
+                                        No notifications available.
+                                    </div>
+                                )}
+                                {notifications.length > 0 && (
+                                    <>
+                                        {notifications.map((notification) => (
+                                            <div key={notification.id} className="flex items-start gap-3">
+                                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white">
+                                                    <CalendarCheck className="h-5 w-5" />
+                                                </div>
+                                                <div className="flex-1 space-y-1">
+                                                    <p className="text-sm font-medium">{notification.message}</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400">1 minute ago</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
                         </CardContent>
                     </Card>

@@ -2,7 +2,7 @@ export async function createNotification(data) {
     console.table(data);
     // Send a POST request to the server with the request data
     try {
-        const response = await fetch(`http://localhost:3001/notifications`, {
+        const response = await fetch(`http://localhost:8082/notifications`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

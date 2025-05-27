@@ -20,7 +20,7 @@ const App = () => {
 
       // Get all requests
       const getRequests = async () => {
-        const response = await fetch(`http://localhost:3001/requests/approver/${user}`);
+        const response = await fetch(`http://localhost:8082/requests/approver/${user}`);
         let data = await response.json();
 
         // Sort the request id in descending order

@@ -10,7 +10,7 @@ const Card = ({socket, user, request}) => {
         if (type === 1) setApproved(!approved);
 
         // Save the approved request
-        const response = await fetch(`http://localhost:3001/requests/${request.id}`, {
+        const response = await fetch(`http://localhost:8082/requests/${request.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

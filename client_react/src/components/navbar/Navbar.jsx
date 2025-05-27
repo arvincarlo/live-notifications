@@ -2,6 +2,7 @@ import { Bell } from "lucide-react";
 import { useEffect, useState } from 'react';
 import './navbar.css';
 
+
 const Navbar = ({socket, user}) => {
 
     const [notifications, setNotifications] = useState([]);
@@ -10,11 +11,12 @@ const Navbar = ({socket, user}) => {
     useEffect(() => {
         // Getting all the notifications based on recipient
         const getNotifications = async () => {
-            const response = await fetch(`http://localhost:3001/notifications/recipient/${user}`);
+            const response = await fetch(`http://localhost:8082/notifications/recipient/${user}`);
             let data = await response.json();
 
             // Sort the request id in descending order
             data = data.sort((a, b) => b.id - a.id);
+            console.log(data);
             setNotifications(data);
         }
 
